@@ -4,4 +4,4 @@ coverage/
 *.log
 tmp/
 .venv/
-
+.npm-cache/

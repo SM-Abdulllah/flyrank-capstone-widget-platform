@@ -1,0 +1,9 @@
+.env
+.git
+.venv
+.npm-cache
+coverage
+node_modules
+tmp
+*.log
+

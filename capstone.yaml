@@ -1,0 +1,30 @@
+run: docker compose up --build
+seed: docker compose exec api npm run seed
+test: docker compose exec api npm test
+base_url: http://localhost:3000
+endpoints:
+  - method: POST
+    path: /auth/login
+  - method: POST
+    path: /api/widgets
+  - method: GET
+    path: /api/widgets
+  - method: GET
+    path: /api/widgets/{id}
+  - method: PUT
+    path: /api/widgets/{id}
+  - method: DELETE
+    path: /api/widgets/{id}
+  - method: GET
+    path: /widget.v1.js
+  - method: GET
+    path: /widgets/{publicId}/config
+  - method: OPTIONS
+    path: /submissions
+  - method: POST
+    path: /submissions
+  - method: GET
+    path: /api/dashboard/submissions
+  - method: GET
+    path: /api/dashboard/stats
+
