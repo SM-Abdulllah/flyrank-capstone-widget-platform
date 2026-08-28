@@ -294,7 +294,19 @@ test('honeypot blocks storage and idempotency prevents duplicate rows', async ()
   assert.equal(await countSubmissionsForWidget(), 1);
 });
 
-test('geo fallback stores provider B data and degrades to null when both providers fail', async () => {
+test('geo enrichment stores provider A data, falls back to B, and degrades to null', async () => {
+  process.env.GEO_PROVIDER_A_MODE = 'success';
+  process.env.GEO_PROVIDER_B_MODE = 'fail';
+
+  const providerAResponse = await http
+    .post('/submissions')
+    .send(validSubmission('tenant-a-demo-signup', 'geo-provider-a'))
+    .expect(201);
+
+  assert.equal(providerAResponse.body.submission.geo_provider, 'provider_a');
+  assert.equal(providerAResponse.body.submission.country, 'Pakistan');
+
+  publicRoutes.resetSubmissionRateLimit();
   process.env.GEO_PROVIDER_A_MODE = 'fail';
   process.env.GEO_PROVIDER_B_MODE = 'success';
 
