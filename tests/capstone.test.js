@@ -144,6 +144,27 @@ test('widget API rejects unauthenticated requests and supports authenticated CRU
     .expect(404);
 });
 
+test('system routes expose service metadata and protect hosted cron processing', async () => {
+  const rootResponse = await http.get('/').expect(200);
+  assert.equal(rootResponse.body.status, 'ok');
+  assert.equal(rootResponse.body.health, '/health');
+
+  process.env.CRON_SECRET = 'test-cron-secret';
+  try {
+    await http.get('/api/cron/process-jobs').expect(401);
+
+    const cronResponse = await http
+      .get('/api/cron/process-jobs')
+      .set('Authorization', 'Bearer test-cron-secret')
+      .expect(200);
+
+    assert.equal(cronResponse.body.ok, true);
+    assert.equal(cronResponse.body.processed, 0);
+  } finally {
+    delete process.env.CRON_SECRET;
+  }
+});
+
 test('tenant isolation prevents cross-tenant widget and dashboard access', async () => {
   const createResponse = await http
     .post('/api/widgets')

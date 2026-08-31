@@ -120,6 +120,40 @@ On PowerShell:
 $env:API_HOST_PORT="3001"; $env:DEMO_HOST_PORT="5501"; $env:PUBLIC_BASE_URL="http://localhost:3001"; docker compose up --build
 ```
 
+## Vercel Deployment
+
+The primary capstone run path is Docker Compose because the project needs API, PostgreSQL, worker, and demo-site services together. Vercel is supported as a hosted API option through `index.js` and `vercel.json`.
+
+Required Vercel environment variables:
+
+- `DATABASE_URL`: hosted PostgreSQL connection string from Neon, Supabase, Vercel Postgres, or another hosted Postgres provider.
+- `JWT_SECRET`: a strong production secret, at least 16 characters.
+- `PUBLIC_BASE_URL`: the deployed Vercel URL, for example `https://your-project.vercel.app`.
+- `CRON_SECRET`: a strong secret used by Vercel Cron for `/api/cron/process-jobs`.
+- `GEO_PROVIDER_A_MODE`: usually `real`.
+- `GEO_PROVIDER_B_MODE`: usually `real`.
+- `SIDE_EFFECT_MODE`: usually `success`.
+- `RATE_LIMIT_WINDOW_MS`: default `1000`.
+- `RATE_LIMIT_MAX`: default `5`.
+- `BODY_LIMIT`: default `16kb`.
+
+After setting `DATABASE_URL`, initialize the hosted database one time from a trusted local terminal:
+
+```powershell
+$env:DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DB?sslmode=require"
+npm run migrate
+npm run seed
+```
+
+Then redeploy on Vercel. The deployment root should return service metadata, `/health` should return `{ "ok": true }`, and the seeded widget config should be available at `/widgets/tenant-a-demo-signup/config`.
+
+On Vercel, the long-running Docker worker is replaced by a protected cron endpoint:
+
+```text
+GET /api/cron/process-jobs
+Authorization: Bearer <CRON_SECRET>
+```
+
 ## Environment
 
 Copy `.env.example` to `.env` for local development. Safe development defaults are included.
@@ -137,6 +171,7 @@ Important variables:
 - `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX`: public submission rate limit settings.
 - `PUBLIC_BASE_URL`: base URL used when generating embed snippets.
 - `BODY_LIMIT`: Express JSON body limit, default `16kb`.
+- `CRON_SECRET`: required for hosted cron job processing.
 
 Never commit `.env`.
 
@@ -319,4 +354,3 @@ Development-time AI assistance is recorded honestly in `BUILDLOG.md`.
 - There is no full frontend dashboard.
 - Local JWT auth is a capstone demo, not a production identity platform.
 - Real geo providers are free, no-key development services and should not be used as production dependencies without review.
-

@@ -655,6 +655,29 @@ Actual output:
 
 Conclusion: dashboard stats include totals, per-widget stats, time aggregation, and geo breakdown.
 
+## Vercel Compatibility
+
+Requirement: the same Express app can be imported by Vercel as a serverless handler without breaking the Docker Compose evaluator path.
+
+Command/test used:
+
+```powershell
+node --preserve-symlinks --preserve-symlinks-main --check .\index.js
+node --preserve-symlinks --preserve-symlinks-main --check .\src\routes\systemRoutes.js
+node --preserve-symlinks --preserve-symlinks-main --check .\src\app.js
+node --preserve-symlinks --preserve-symlinks-main -e "const app = require('./index'); if (typeof app !== 'function') throw new Error('Express app was not exported'); console.log('serverless export ok')"
+node --preserve-symlinks --preserve-symlinks-main -e "const request=require('supertest'); const app=require('./index'); Promise.all([request(app).get('/').expect(200), request(app).get('/health').expect(200)]).then(([root,health])=>{ if(root.body.status !== 'ok' || health.body.ok !== true) throw new Error('bad smoke response'); console.log('root and health smoke ok'); }).catch((error)=>{ console.error(error); process.exit(1); })"
+```
+
+Actual output:
+
+```text
+serverless export ok
+root and health smoke ok
+```
+
+Conclusion: Vercel can import the root Express export, and the deployment root plus `/health` work without touching the database. Full hosted functionality still requires `DATABASE_URL`, migrations, and seed data on a hosted PostgreSQL database.
+
 ## Data Safety
 
 Requirement: SQL uses parameterized values.

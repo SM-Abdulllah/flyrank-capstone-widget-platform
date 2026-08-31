@@ -4,6 +4,7 @@ const { env } = require('./config/env');
 const { requestId } = require('./middleware/requestId');
 const { errorHandler } = require('./middleware/errorHandler');
 const { AppError } = require('./errors');
+const systemRoutes = require('./routes/systemRoutes');
 const authRoutes = require('./routes/authRoutes');
 const widgetRoutes = require('./routes/widgetRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
@@ -23,6 +24,7 @@ function createApp() {
   );
   app.use(express.json({ limit: env.BODY_LIMIT }));
 
+  app.use(systemRoutes);
   app.use(publicRoutes);
   app.use('/auth', authRoutes);
   app.use('/api/widgets', widgetRoutes);
@@ -40,4 +42,3 @@ function createApp() {
 module.exports = {
   createApp
 };
-

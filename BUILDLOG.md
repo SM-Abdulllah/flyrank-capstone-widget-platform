@@ -31,10 +31,25 @@
 - AI/Codex assistance: helped write evidence and README text from real outputs.
 - What needed care: host-side `npm test` attempted to connect to a conflicting local PostgreSQL listener; the final supported verification command is the Docker command in `capstone.yaml`, which ran successfully inside the API container.
 
+## 2026-08-31
+
+### Hosted deployment compatibility
+
+- Added a root Express export for Vercel, `vercel.json` rewrites, and a protected cron endpoint that can process queued notification jobs on hosted deployments.
+- Documented the hosted PostgreSQL, `PUBLIC_BASE_URL`, and `CRON_SECRET` settings needed for a Vercel deployment.
+- Added focused test coverage for the service metadata route and cron authorization behavior.
+- Tested afterwards:
+  - `node --preserve-symlinks --preserve-symlinks-main --check .\index.js`
+  - `node --preserve-symlinks --preserve-symlinks-main --check .\src\routes\systemRoutes.js`
+  - `node --preserve-symlinks --preserve-symlinks-main --check .\src\app.js`
+  - `node --preserve-symlinks --preserve-symlinks-main -e "const app = require('./index'); if (typeof app !== 'function') throw new Error('Express app was not exported'); console.log('serverless export ok')"`
+  - DB-free supertest smoke for `/` and `/health`.
+- What needed care: host-side Docker and local PostgreSQL were not accessible from the Codex sandbox on 2026-08-31, so the previous Docker evidence remains the acceptance baseline for the full database-backed suite.
+- AI/Codex assistance: diagnosed the Vercel function crash from the deployment screenshot and adjusted the deployment entrypoint while preserving the Docker Compose evaluator path.
+
 ## AI Cost Tracking
 
 - Runtime AI calls: 0.
 - Runtime AI cost: $0.
 - Budget guard: runtime AI disabled; this app does not call AI services.
 - Development-time AI assistance: Codex was used through the local app. No runtime per-call product cost exists in the submitted backend. If the developer account has subscription billing for Codex/ChatGPT usage, no per-runtime capstone API cost is exposed by this application and no dollar amount is fabricated here.
-
