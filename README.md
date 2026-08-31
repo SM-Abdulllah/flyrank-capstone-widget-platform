@@ -147,7 +147,7 @@ npm run seed
 
 Then redeploy on Vercel. The deployment root should return service metadata, `/health` should return `{ "ok": true }`, and the seeded widget config should be available at `/widgets/tenant-a-demo-signup/config`.
 
-On Vercel, the long-running Docker worker is replaced by a protected cron endpoint:
+On Vercel, the long-running Docker worker is replaced by a protected cron endpoint. The committed `vercel.json` uses a daily UTC schedule so it works on Hobby projects; Pro projects can safely make this more frequent if desired.
 
 ```text
 GET /api/cron/process-jobs

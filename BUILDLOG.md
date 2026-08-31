@@ -37,6 +37,7 @@
 
 - Added a root Express export for Vercel, `vercel.json` rewrites, and a protected cron endpoint that can process queued notification jobs on hosted deployments.
 - Documented the hosted PostgreSQL, `PUBLIC_BASE_URL`, and `CRON_SECRET` settings needed for a Vercel deployment.
+- Set the Vercel cron schedule to daily UTC so it deploys on Hobby projects as well as paid plans.
 - Added focused test coverage for the service metadata route and cron authorization behavior.
 - Tested afterwards:
   - `node --preserve-symlinks --preserve-symlinks-main --check .\index.js`
